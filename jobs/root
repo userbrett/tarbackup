@@ -1,0 +1,12 @@
+BACKUPFROM="/root/.bashrc \
+            /root/.bash_history \
+            /root/.bash_logout \
+            /root/.bash_profile \
+            /root/.cshrc \
+            /root/.inputrc \
+            /root/.ssh \
+            /root/.tcshrc \
+            /root/bin \
+            /root/notes \
+            /root/sbin \
+            /root/work"

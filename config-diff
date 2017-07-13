@@ -1,0 +1,20 @@
+# config-diff
+#
+# config file for differential backups.
+
+TODAY=`date +%Y%m%d`
+THISDAY=`date +%d`
+
+#
+# name of the host being backed up
+BACKUPHOST=$(hostname | cut -d"." -f1)
+
+#
+# directory where backups will be written 
+BACKUPTO="/data/backup"
+
+#
+# location of the backup scripts
+SCRIPTDIR="/root/bin/backup"
+
+export TODAY THISDAY BACKUPHOST BACKUPTO SCRIPTDIR

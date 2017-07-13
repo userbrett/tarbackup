@@ -1,0 +1,20 @@
+# config
+#
+# config file for full backups.
+
+TODAY=`date +%Y%m%d`
+THISDAY=`date +%d`
+
+#
+# name of the host being backed up
+BACKUPHOST=$(hostname | cut -d"." -f1)
+
+#
+# directory where backups will be written 
+BACKUPTO="/data/archive"
+
+#
+# location of the backup scripts
+SCRIPTDIR="/root/bin/backup"
+
+export TODAY THISDAY BACKUPHOST BACKUPTO SCRIPTDIR

@@ -1,0 +1,83 @@
+README 
+===================
+
+TarBackup is known to work on Linux/Unix servers.
+
+The prereq's are a Linux/Unix node with tar, perl, and xargs.
+
+To configure the backups, you should have something like this:
+
+[root@host backup]# pwd
+/root/bin/backup
+
+[root@host backup]# ls -l
+drwxr-xr-x 2 root root 4096 Jun 12 09:56 daily
+drwxr-xr-x 3 root root 4096 Jun 24 10:51 jobs
+drwxr-xr-x 2 root root 4096 Jun 12 09:56 monthly
+drwxr-xr-x 2 root root 4096 Feb  5 14:10 weekly
+-rwxr-xr-x 1 root root 3775 Jun 12 17:46 backup.sh
+-rw-r--r-- 1 root root  382 Jun 14 14:10 config-full
+-rw-r--r-- 1 root root  381 Jun 14 14:10 config-diff
+-rw-r--r-- 1 root root 5440 Jun 14 14:20 README.txt
+
+The jobs directory contains lists of directories that will be backed up.
+For example, the "home" directory shown below will contain a fully-pathed
+list of directories, one per line.  The next entry in the jobs directory,
+"home.exclude", captures any subdirectories that should NOT be backed up.
+The exclude list is is also fully pathed.  Together, the backup and exclude
+lists are a "module" within TarBackup.  Each module will be backed up to
+a unique tarball.
+
+[root@host backup]# ls -l jobs
+-rw-r--r--  1 root  root   41 Jul 13 09:23 data
+-rw-r--r--  1 root  root   30 Jul 13 09:25 data.exclude
+-rwxr-xr-x  1 root  root  528 Jul 13 09:11 data.script
+-rw-r--r--  1 root  root   51 Jul 13 09:21 home
+-rw-r--r--  1 root  root   15 Jul 13 09:25 home.exclude
+-rw-r--r--  1 root  root  337 Jul 12 22:46 root
+
+Shown above are that both the data and home modules each have an exclude
+file.  One other type of file that may be in a module is a "script" file.
+Any entry with a "<name>.script" file will cause that script to run *BEFORE*
+the backup for that module is created.  In the examples provided, the script
+performs a dump of a database.
+
+TarBackup supports two types of backups - full and differential.  When a
+monthly backup is created, the "full" configuration is used.  Otherwise,
+the differential configuration is used.  This has been coded into the
+backup.sh script.
+
+** Note:  The differential backup is NOT a true differential backup.  The
+          differential is NOT from the last time that the file was backed
+          up, but instead it is from the beginning of the current month.
+          An assumption of this project is that a full backup will be created
+          monthly on the first of the month, and thereby the TarBackup
+          differential backups will act as differential backups.
+
+As released, TarBackup provides "daily", "weekly" and "monthly" backups.
+Additional periods can be added by modifying the backup.sh script.
+
+To specify which modules run at which periods, a symbolic link should be
+created from within the period directory to the job.  For example:
+
+[root@host backup]# ls -l daily/
+lrwxrwxrwx 1 root root 12 Jun 11 17:23 data -> ../jobs/data
+lrwxrwxrwx 1 root root 12 Nov 17  2014 home -> ../jobs/home
+lrwxrwxrwx 1 root root 12 Nov 17  2014 root -> ../jobs/root
+
+TarBackup runs from cron, so you will need some cron entries.
+Here are two examples:
+
+# Differential Backup - Daily
+10 01 * * * /root/bin/backup/backup.sh daily 2>&1 | mail -s'Daily Backup' you@domain.com
+
+# Full Backup - Monthly
+30 01 1 * * /root/bin/backup/backup.sh monthly 2>&1 | mail -s'Monthly Backup' you@domain.com
+
+** Finally, to use TarBackup on your system(s):
+
+  1.  Add modules that represent the system(s) to be backed up.
+  2.  Create symlinks from within the periods to the jobs.
+  3.  Create cron entries to run the jobs.
+  4.  Create and archive a full backup on the first of each month.
+

@@ -1,0 +1,11 @@
+# data.script
+#
+# This script will be run BEFORE the data backup is created.
+# In this example, it has only command - a dump of a SVN database.
+#
+# While the dump could be written to a directory that will be subsequently
+# backed up, the TarBackup variables have been exported, so this dump can
+# be written directly to destination where the other backups will be created.
+
+svnadmin dump /data/software/svn |\
+     bzip2 > ${BACKUPTO}/${BACKUPHOST}/${BACKUPHOST}-${BACKUPTYPE}-${TODAY}/svn.dump-${TODAY}.bz2
